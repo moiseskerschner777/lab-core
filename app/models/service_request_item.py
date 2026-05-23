@@ -6,11 +6,11 @@ from database import Base
 class ServiceRequestItem(Base):
     __tablename__ = "labcore_service_request_item"
 
-    id = Column(String, primary_key=True)
+    id = Column(String(36), primary_key=True)
     service_request_id = Column(
-        String, ForeignKey("labcore_service_request.id"), nullable=False
+        String(36), ForeignKey("labcore_service_request.id"), nullable=False
     )
-    exam_code = Column(String, nullable=False)
-    exam_name = Column(String, nullable=False)
-    status = Column(String, default="pending", nullable=False)
-    notes = Column(String, nullable=True)
+    exam_code = Column(String(20), nullable=False)
+    exam_name = Column(String(120), nullable=False)
+    status = Column(String(20), default="pending", nullable=False)
+    notes = Column(String(255), nullable=True)

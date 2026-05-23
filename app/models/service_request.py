@@ -9,17 +9,17 @@ from database import Base
 class ServiceRequest(Base):
     __tablename__ = "labcore_service_request"
 
-    id = Column(String, primary_key=True)
-    code = Column(String, unique=True, nullable=False)
-    status = Column(String, default="active", nullable=False)
-    priority = Column(String, default="routine", nullable=False)
-    patient_id = Column(String, ForeignKey("labcore_patient.id"), nullable=False)
+    id = Column(String(36), primary_key=True)
+    code = Column(String(20), unique=True, nullable=False)
+    status = Column(String(20), default="active", nullable=False)
+    priority = Column(String(20), default="routine", nullable=False)
+    patient_id = Column(String(36), ForeignKey("labcore_patient.id"), nullable=False)
     practitioner_id = Column(
-        String, ForeignKey("labcore_practitioner.id"), nullable=False
+        String(36), ForeignKey("labcore_practitioner.id"), nullable=False
     )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     cancelled_at = Column(DateTime, nullable=True)
-    notes = Column(String, nullable=True)
+    notes = Column(String(255), nullable=True)
 
     patient = relationship("Patient")
     practitioner = relationship("Practitioner")
