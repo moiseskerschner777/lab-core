@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import sys
 
@@ -8,6 +8,8 @@ from database import SessionLocal
 from models.exam_catalog import ExamCatalog
 from models.patient import Patient
 from models.practitioner import Practitioner
+from models.service_request import ServiceRequest
+from models.service_request_item import ServiceRequestItem
 
 
 PATIENTS = [
@@ -198,6 +200,131 @@ EXAMS = [
     },
 ]
 
+SERVICE_REQUESTS = [
+    {
+        "id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
+        "code": "OS-00001",
+        "status": "active",
+        "priority": "routine",
+        "patient_id": "11c5be47-3215-4890-a79f-9c2b2293a85e",
+        "practitioner_id": "0f7f838f-5bbd-43b7-951c-02582e4272a3",
+        "created_at": datetime(2026, 5, 20, 8, 0, 0),
+        "cancelled_at": None,
+        "notes": "Check-up anual",
+    },
+    {
+        "id": "cd974d08-25b3-4dad-b7d6-9b5fd0d1c775",
+        "code": "OS-00002",
+        "status": "active",
+        "priority": "urgent",
+        "patient_id": "e36e8749-a762-45ea-bd6b-63a5745d6e07",
+        "practitioner_id": "8853e3c3-d0f9-469f-ae48-7813dc83b8ec",
+        "created_at": datetime(2026, 5, 20, 9, 15, 0),
+        "cancelled_at": None,
+        "notes": "Investigacao oncológica",
+    },
+    {
+        "id": "8be80631-8b87-4b62-a852-72d5926b021e",
+        "code": "OS-00003",
+        "status": "active",
+        "priority": "routine",
+        "patient_id": "664d2678-29ce-450e-ab50-bd463364ded6",
+        "practitioner_id": "35ca797f-5099-479d-91d5-fbe12a125b90",
+        "created_at": datetime(2026, 5, 21, 10, 30, 0),
+        "cancelled_at": None,
+        "notes": "Painel metabólico ampliado",
+    },
+    {
+        "id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
+        "code": "OS-00004",
+        "status": "completed",
+        "priority": "routine",
+        "patient_id": "57b22f32-fb64-4328-8aea-331c799e8c5b",
+        "practitioner_id": "8853e3c3-d0f9-469f-ae48-7813dc83b8ec",
+        "created_at": datetime(2026, 5, 18, 7, 45, 0),
+        "cancelled_at": None,
+        "notes": "Resultado liberado",
+    },
+    {
+        "id": "6f9036b2-7130-47a5-9574-2bf5ce213fc7",
+        "code": "OS-00005",
+        "status": "cancelled",
+        "priority": "stat",
+        "patient_id": "cbf0c4f8-6414-4e62-a9d6-8f5fae25e87f",
+        "practitioner_id": "0f7f838f-5bbd-43b7-951c-02582e4272a3",
+        "created_at": datetime(2026, 5, 19, 6, 20, 0),
+        "cancelled_at": datetime(2026, 5, 19, 7, 0, 0),
+        "notes": "Solicitação cancelada antes da coleta",
+    },
+]
+
+SERVICE_REQUEST_ITEMS = [
+    {
+        "id": "d13f5fbd-0204-4796-96d6-fc0700e9a357",
+        "service_request_id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
+        "exam_code": "HEM001",
+        "exam_name": "Hemograma",
+        "status": "pending",
+        "notes": None,
+    },
+    {
+        "id": "940f4e0d-3769-4bbf-833b-a899c4c0fcae",
+        "service_request_id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
+        "exam_code": "GLI001",
+        "exam_name": "Glicemia",
+        "status": "pending",
+        "notes": None,
+    },
+    {
+        "id": "0de75868-77be-43d6-b269-af7ca2ac11a2",
+        "service_request_id": "cd974d08-25b3-4dad-b7d6-9b5fd0d1c775",
+        "exam_code": "ONC001",
+        "exam_name": "Marcadores Tumorais",
+        "status": "pending",
+        "notes": "Aguardando roteamento",
+    },
+    {
+        "id": "ee6d731b-f982-479d-a4b8-b534495b4591",
+        "service_request_id": "8be80631-8b87-4b62-a852-72d5926b021e",
+        "exam_code": "TSH001",
+        "exam_name": "TSH",
+        "status": "pending",
+        "notes": None,
+    },
+    {
+        "id": "7f5f0c63-6f1e-42c2-ab2b-edbb122cf7f2",
+        "service_request_id": "8be80631-8b87-4b62-a852-72d5926b021e",
+        "exam_code": "GEN001",
+        "exam_name": "Teste Genético",
+        "status": "pending",
+        "notes": "Enviar ao laboratório de apoio",
+    },
+    {
+        "id": "6d2d2f35-72a1-4c89-b2bb-c89fcd293f2e",
+        "service_request_id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
+        "exam_code": "COL001",
+        "exam_name": "Colesterol Total",
+        "status": "completed",
+        "notes": None,
+    },
+    {
+        "id": "29542b31-16b7-4f96-b738-81e44ae15358",
+        "service_request_id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
+        "exam_code": "URI001",
+        "exam_name": "Urina Tipo I",
+        "status": "completed",
+        "notes": None,
+    },
+    {
+        "id": "00c98da7-f6f7-4e3d-b565-7fe05bd0ca18",
+        "service_request_id": "6f9036b2-7130-47a5-9574-2bf5ce213fc7",
+        "exam_code": "CUL001",
+        "exam_name": "Cultura e Antibiograma",
+        "status": "cancelled",
+        "notes": "Cancelado com a OS",
+    },
+]
+
 
 def insert_patient_if_missing(session, patient_data):
     if session.get(Patient, patient_data["id"]) is None:
@@ -214,6 +341,16 @@ def insert_exam_if_missing(session, exam_data):
         session.add(ExamCatalog(**exam_data))
 
 
+def insert_service_request_if_missing(session, service_request_data):
+    if session.get(ServiceRequest, service_request_data["id"]) is None:
+        session.add(ServiceRequest(**service_request_data))
+
+
+def insert_service_request_item_if_missing(session, item_data):
+    if session.get(ServiceRequestItem, item_data["id"]) is None:
+        session.add(ServiceRequestItem(**item_data))
+
+
 def main():
     session = SessionLocal()
     try:
@@ -223,6 +360,10 @@ def main():
             insert_practitioner_if_missing(session, practitioner_data)
         for exam_data in EXAMS:
             insert_exam_if_missing(session, exam_data)
+        for service_request_data in SERVICE_REQUESTS:
+            insert_service_request_if_missing(session, service_request_data)
+        for item_data in SERVICE_REQUEST_ITEMS:
+            insert_service_request_item_if_missing(session, item_data)
         session.commit()
     finally:
         session.close()
