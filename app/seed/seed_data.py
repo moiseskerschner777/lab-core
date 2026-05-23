@@ -6,6 +6,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from database import SessionLocal
 from models.patient import Patient
+from models.practitioner import Practitioner
 
 
 PATIENTS = [
@@ -91,10 +92,45 @@ PATIENTS = [
     },
 ]
 
+PRACTITIONERS = [
+    {
+        "id": "0f7f838f-5bbd-43b7-951c-02582e4272a3",
+        "name": "Dra. Helena Martins",
+        "specialty": "Cardiologia",
+        "council_type": "CRM",
+        "council_number": "12345",
+        "council_state": "SC",
+        "active": True,
+    },
+    {
+        "id": "8853e3c3-d0f9-469f-ae48-7813dc83b8ec",
+        "name": "Dr. Ricardo Menezes",
+        "specialty": "Clínica Geral",
+        "council_type": "CRM",
+        "council_number": "23456",
+        "council_state": "SC",
+        "active": True,
+    },
+    {
+        "id": "35ca797f-5099-479d-91d5-fbe12a125b90",
+        "name": "Dra. Camila Azevedo",
+        "specialty": "Endocrinologia",
+        "council_type": "CRM",
+        "council_number": "34567",
+        "council_state": "SC",
+        "active": True,
+    },
+]
+
 
 def insert_patient_if_missing(session, patient_data):
     if session.get(Patient, patient_data["id"]) is None:
         session.add(Patient(**patient_data))
+
+
+def insert_practitioner_if_missing(session, practitioner_data):
+    if session.get(Practitioner, practitioner_data["id"]) is None:
+        session.add(Practitioner(**practitioner_data))
 
 
 def main():
@@ -102,6 +138,8 @@ def main():
     try:
         for patient_data in PATIENTS:
             insert_patient_if_missing(session, patient_data)
+        for practitioner_data in PRACTITIONERS:
+            insert_practitioner_if_missing(session, practitioner_data)
         session.commit()
     finally:
         session.close()
