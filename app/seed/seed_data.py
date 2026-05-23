@@ -5,6 +5,7 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from database import SessionLocal
+from models.exam_catalog import ExamCatalog
 from models.patient import Patient
 from models.practitioner import Practitioner
 
@@ -122,6 +123,81 @@ PRACTITIONERS = [
     },
 ]
 
+EXAMS = [
+    {
+        "exam_code": "HEM001",
+        "exam_name": "Hemograma",
+        "category": "hematology",
+        "can_perform": True,
+        "requires_support_lab": False,
+        "support_lab": None,
+        "turnaround_hours": 4,
+    },
+    {
+        "exam_code": "GLI001",
+        "exam_name": "Glicemia",
+        "category": "biochemistry",
+        "can_perform": True,
+        "requires_support_lab": False,
+        "support_lab": None,
+        "turnaround_hours": 2,
+    },
+    {
+        "exam_code": "COL001",
+        "exam_name": "Colesterol Total",
+        "category": "biochemistry",
+        "can_perform": True,
+        "requires_support_lab": False,
+        "support_lab": None,
+        "turnaround_hours": 6,
+    },
+    {
+        "exam_code": "URI001",
+        "exam_name": "Urina Tipo I",
+        "category": "urinalysis",
+        "can_perform": True,
+        "requires_support_lab": False,
+        "support_lab": None,
+        "turnaround_hours": 8,
+    },
+    {
+        "exam_code": "TSH001",
+        "exam_name": "TSH",
+        "category": "hormones",
+        "can_perform": True,
+        "requires_support_lab": False,
+        "support_lab": None,
+        "turnaround_hours": 12,
+    },
+    {
+        "exam_code": "ONC001",
+        "exam_name": "Marcadores Tumorais",
+        "category": "oncology",
+        "can_perform": False,
+        "requires_support_lab": True,
+        "support_lab": "reflab",
+        "turnaround_hours": 72,
+    },
+    {
+        "exam_code": "GEN001",
+        "exam_name": "Teste Genético",
+        "category": "genetics",
+        "can_perform": False,
+        "requires_support_lab": True,
+        "support_lab": "reflab",
+        "turnaround_hours": 120,
+    },
+    {
+        "exam_code": "CUL001",
+        "exam_name": "Cultura e Antibiograma",
+        "category": "microbiology",
+        "can_perform": False,
+        "requires_support_lab": True,
+        "support_lab": "reflab",
+        "turnaround_hours": 96,
+    },
+]
+
 
 def insert_patient_if_missing(session, patient_data):
     if session.get(Patient, patient_data["id"]) is None:
@@ -133,6 +209,11 @@ def insert_practitioner_if_missing(session, practitioner_data):
         session.add(Practitioner(**practitioner_data))
 
 
+def insert_exam_if_missing(session, exam_data):
+    if session.get(ExamCatalog, exam_data["exam_code"]) is None:
+        session.add(ExamCatalog(**exam_data))
+
+
 def main():
     session = SessionLocal()
     try:
@@ -140,6 +221,8 @@ def main():
             insert_patient_if_missing(session, patient_data)
         for practitioner_data in PRACTITIONERS:
             insert_practitioner_if_missing(session, practitioner_data)
+        for exam_data in EXAMS:
+            insert_exam_if_missing(session, exam_data)
         session.commit()
     finally:
         session.close()
