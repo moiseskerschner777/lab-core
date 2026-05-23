@@ -3,6 +3,8 @@ from datetime import date, datetime
 from pathlib import Path
 import sys
 
+from sqlalchemy import inspect
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from database import SessionLocal
@@ -128,6 +130,7 @@ PRACTITIONERS = [
 
 EXAMS = [
     {
+        "id": "d00f6eeb-7c0e-4cdf-a44f-78dd65d16ed5",
         "exam_code": "HEM001",
         "exam_name": "Hemograma",
         "category": "hematology",
@@ -137,6 +140,7 @@ EXAMS = [
         "turnaround_hours": 4,
     },
     {
+        "id": "9b5dba88-9494-4853-bcec-c2d5cdf4e346",
         "exam_code": "GLI001",
         "exam_name": "Glicemia",
         "category": "biochemistry",
@@ -146,6 +150,7 @@ EXAMS = [
         "turnaround_hours": 2,
     },
     {
+        "id": "bc0495ea-fbec-4030-a79d-6c8b1f462dd2",
         "exam_code": "COL001",
         "exam_name": "Colesterol Total",
         "category": "biochemistry",
@@ -155,6 +160,7 @@ EXAMS = [
         "turnaround_hours": 6,
     },
     {
+        "id": "ba0a6086-f4f3-4d00-a84f-a4069b72a721",
         "exam_code": "URI001",
         "exam_name": "Urina Tipo I",
         "category": "urinalysis",
@@ -164,6 +170,7 @@ EXAMS = [
         "turnaround_hours": 8,
     },
     {
+        "id": "18aa003f-91dc-49bf-a664-f0cdcc19c347",
         "exam_code": "TSH001",
         "exam_name": "TSH",
         "category": "hormones",
@@ -173,6 +180,7 @@ EXAMS = [
         "turnaround_hours": 12,
     },
     {
+        "id": "ea48cf24-2137-4b86-b386-6eb807d1dd83",
         "exam_code": "ONC001",
         "exam_name": "Marcadores Tumorais",
         "category": "oncology",
@@ -182,6 +190,7 @@ EXAMS = [
         "turnaround_hours": 72,
     },
     {
+        "id": "7c7214ba-bf17-48dc-ac33-53ef157a6c68",
         "exam_code": "GEN001",
         "exam_name": "Teste Genético",
         "category": "genetics",
@@ -191,6 +200,7 @@ EXAMS = [
         "turnaround_hours": 120,
     },
     {
+        "id": "5c1bd310-b8dc-4d74-85cc-c1fa4518104f",
         "exam_code": "CUL001",
         "exam_name": "Cultura e Antibiograma",
         "category": "microbiology",
@@ -338,7 +348,12 @@ def insert_practitioner_if_missing(session, practitioner_data):
 
 
 def insert_exam_if_missing(session, exam_data):
-    if session.get(ExamCatalog, exam_data["exam_code"]) is None:
+    if (
+        session.query(ExamCatalog)
+        .filter_by(exam_code=exam_data["exam_code"])
+        .first()
+        is None
+    ):
         session.add(ExamCatalog(**exam_data))
 
 
@@ -355,9 +370,28 @@ def insert_service_request_item_if_missing(session, item_data):
 def reset_data(session):
     session.query(ServiceRequestItem).delete()
     session.query(ServiceRequest).delete()
-    session.query(ExamCatalog).delete()
     session.query(Practitioner).delete()
     session.query(Patient).delete()
+    session.commit()
+    rebuild_exam_catalog_table(session)
+
+
+def exam_catalog_needs_rebuild(session):
+    inspector = inspect(session.get_bind())
+    if not inspector.has_table(ExamCatalog.__tablename__):
+        return False
+
+    columns = {column["name"] for column in inspector.get_columns(ExamCatalog.__tablename__)}
+    primary_key = inspector.get_pk_constraint(ExamCatalog.__tablename__).get(
+        "constrained_columns", []
+    )
+    return "id" not in columns or primary_key != ["id"]
+
+
+def rebuild_exam_catalog_table(session):
+    bind = session.get_bind()
+    ExamCatalog.__table__.drop(bind=bind, checkfirst=True)
+    ExamCatalog.__table__.create(bind=bind, checkfirst=True)
 
 
 def main():
@@ -369,6 +403,8 @@ def main():
     try:
         if args.reset:
             reset_data(session)
+        elif exam_catalog_needs_rebuild(session):
+            rebuild_exam_catalog_table(session)
         for patient_data in PATIENTS:
             insert_patient_if_missing(session, patient_data)
         for practitioner_data in PRACTITIONERS:

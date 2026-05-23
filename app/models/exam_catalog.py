@@ -6,7 +6,8 @@ from database import Base
 class ExamCatalog(Base):
     __tablename__ = "labcore_exam_catalog"
 
-    exam_code = Column(String(20), primary_key=True)
+    id = Column(String(36), primary_key=True)
+    exam_code = Column(String(20), nullable=False, unique=True)
     exam_name = Column(String(120), nullable=False)
     category = Column(String(60), nullable=False)
     can_perform = Column(Boolean, nullable=False)
