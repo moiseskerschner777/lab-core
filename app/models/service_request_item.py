@@ -1,0 +1,16 @@
+from sqlalchemy import Column, ForeignKey, String
+
+from database import Base
+
+
+class ServiceRequestItem(Base):
+    __tablename__ = "labcore_service_request_item"
+
+    id = Column(String, primary_key=True)
+    service_request_id = Column(
+        String, ForeignKey("labcore_service_request.id"), nullable=False
+    )
+    exam_code = Column(String, nullable=False)
+    exam_name = Column(String, nullable=False)
+    status = Column(String, default="pending", nullable=False)
+    notes = Column(String, nullable=True)
