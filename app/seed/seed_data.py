@@ -1,3 +1,4 @@
+import argparse
 from datetime import date, datetime
 from pathlib import Path
 import sys
@@ -351,9 +352,23 @@ def insert_service_request_item_if_missing(session, item_data):
         session.add(ServiceRequestItem(**item_data))
 
 
+def reset_data(session):
+    session.query(ServiceRequestItem).delete()
+    session.query(ServiceRequest).delete()
+    session.query(ExamCatalog).delete()
+    session.query(Practitioner).delete()
+    session.query(Patient).delete()
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true")
+    args = parser.parse_args()
+
     session = SessionLocal()
     try:
+        if args.reset:
+            reset_data(session)
         for patient_data in PATIENTS:
             insert_patient_if_missing(session, patient_data)
         for practitioner_data in PRACTITIONERS:
@@ -362,6 +377,7 @@ def main():
             insert_exam_if_missing(session, exam_data)
         for service_request_data in SERVICE_REQUESTS:
             insert_service_request_if_missing(session, service_request_data)
+        session.flush()
         for item_data in SERVICE_REQUEST_ITEMS:
             insert_service_request_item_if_missing(session, item_data)
         session.commit()
