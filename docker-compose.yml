@@ -7,7 +7,13 @@ services:
     volumes:
       - iris-data:/durable
     healthcheck:
-      test: ["CMD", "bash", "-lc", "echo > /dev/tcp/127.0.0.1/52773"]
+      test:
+        [
+          "CMD",
+          "bash",
+          "-lc",
+          "printf 'zn \"%SYS\"\\nset cnt=0 set sc=##class(Security.Users).UnExpireUserPasswords(\"_SYSTEM\",.cnt)\\nhalt\\n' | iris session IRIS >/dev/null 2>&1 && echo > /dev/tcp/127.0.0.1/52773",
+        ]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -17,6 +23,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
     depends_on:
       iris:
         condition: service_healthy
