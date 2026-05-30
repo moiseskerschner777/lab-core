@@ -32,3 +32,15 @@ def ensure_table(conn, collection: str):
         pass
 
     conn.commit()
+
+
+def delete_collection(conn, collection: str):
+    cur = conn.cursor()
+    cur.execute(f"DELETE FROM RAG_{collection}")
+    conn.commit()
+
+
+def collection_exists(conn, collection: str) -> bool:
+    cur = conn.cursor()
+    cur.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'RAG_{collection}'")
+    return cur.fetchone() is not None
