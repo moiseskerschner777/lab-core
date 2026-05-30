@@ -7,15 +7,16 @@ from database import Base
 
 
 class ServiceRequest(Base):
-    __tablename__ = "labcore_service_request"
+    __tablename__ = "service_request"
+    __table_args__ = {"schema": "labcore"}
 
     id = Column(String(36), primary_key=True)
     code = Column(String(20), unique=True, nullable=False)
     status = Column(String(20), default="active", nullable=False)
     priority = Column(String(20), default="routine", nullable=False)
-    patient_id = Column(String(36), ForeignKey("labcore_patient.id"), nullable=False)
+    patient_id = Column(String(36), ForeignKey("labcore.patient.id"), nullable=False)
     practitioner_id = Column(
-        String(36), ForeignKey("labcore_practitioner.id"), nullable=False
+        String(36), ForeignKey("labcore.practitioner.id"), nullable=False
     )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     cancelled_at = Column(DateTime, nullable=True)

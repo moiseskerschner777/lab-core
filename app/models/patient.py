@@ -6,7 +6,8 @@ from database import Base
 
 
 class Patient(Base):
-    __tablename__ = "labcore_patient"
+    __tablename__ = "patient"
+    __table_args__ = {"schema": "labcore"}
 
     id = Column(String(36), primary_key=True)
     name_family = Column(String(120), nullable=False)

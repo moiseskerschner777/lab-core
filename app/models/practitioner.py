@@ -4,7 +4,8 @@ from database import Base
 
 
 class Practitioner(Base):
-    __tablename__ = "labcore_practitioner"
+    __tablename__ = "practitioner"
+    __table_args__ = {"schema": "labcore"}
 
     id = Column(String(36), primary_key=True)
     name = Column(String(120), nullable=False)

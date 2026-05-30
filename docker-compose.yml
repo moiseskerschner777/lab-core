@@ -12,7 +12,7 @@ services:
           "CMD",
           "bash",
           "-lc",
-          "printf 'zn \"%SYS\"\\nset cnt=0 set sc=##class(Security.Users).UnExpireUserPasswords(\"_SYSTEM\",.cnt)\\nhalt\\n' | iris session IRIS >/dev/null 2>&1 && echo > /dev/tcp/127.0.0.1/52773",
+          "echo -e 'zn \"%SYS\"\\nset sc=##class(Security.Users).UnExpireUserPasswords(\"_SYSTEM\")\\nhalt' | iris session IRIS && echo > /dev/tcp/127.0.0.1/52773",
         ]
       interval: 10s
       timeout: 5s

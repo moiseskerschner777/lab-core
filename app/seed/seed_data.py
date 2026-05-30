@@ -394,6 +394,43 @@ def rebuild_exam_catalog_table(session):
     ExamCatalog.__table__.create(bind=bind, checkfirst=True)
 
 
+def database_is_empty(session):
+    return (
+        session.query(Patient.id).first() is None
+        and session.query(Practitioner.id).first() is None
+        and session.query(ExamCatalog.id).first() is None
+        and session.query(ServiceRequest.id).first() is None
+    )
+
+
+def seed_database(session, reset=False):
+    if reset:
+        reset_data(session)
+    elif exam_catalog_needs_rebuild(session):
+        rebuild_exam_catalog_table(session)
+
+    for patient_data in PATIENTS:
+        insert_patient_if_missing(session, patient_data)
+    for practitioner_data in PRACTITIONERS:
+        insert_practitioner_if_missing(session, practitioner_data)
+    for exam_data in EXAMS:
+        insert_exam_if_missing(session, exam_data)
+    for service_request_data in SERVICE_REQUESTS:
+        insert_service_request_if_missing(session, service_request_data)
+    session.flush()
+    for item_data in SERVICE_REQUEST_ITEMS:
+        insert_service_request_item_if_missing(session, item_data)
+    session.commit()
+
+
+def seed_database_if_empty(session):
+    if not exam_catalog_needs_rebuild(session) and not database_is_empty(session):
+        return False
+
+    seed_database(session)
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true")
@@ -401,22 +438,7 @@ def main():
 
     session = SessionLocal()
     try:
-        if args.reset:
-            reset_data(session)
-        elif exam_catalog_needs_rebuild(session):
-            rebuild_exam_catalog_table(session)
-        for patient_data in PATIENTS:
-            insert_patient_if_missing(session, patient_data)
-        for practitioner_data in PRACTITIONERS:
-            insert_practitioner_if_missing(session, practitioner_data)
-        for exam_data in EXAMS:
-            insert_exam_if_missing(session, exam_data)
-        for service_request_data in SERVICE_REQUESTS:
-            insert_service_request_if_missing(session, service_request_data)
-        session.flush()
-        for item_data in SERVICE_REQUEST_ITEMS:
-            insert_service_request_item_if_missing(session, item_data)
-        session.commit()
+        seed_database(session, reset=args.reset)
     finally:
         session.close()
 

@@ -11,6 +11,15 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def create_schema_if_not_exists(engine):
+    try:
+        with engine.connect() as conn:
+            conn.exec_driver_sql("CREATE SCHEMA labcore")
+            conn.commit()
+    except Exception:
+        pass
+
+
 def get_db():
     db = SessionLocal()
     try:

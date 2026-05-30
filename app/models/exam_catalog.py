@@ -4,7 +4,8 @@ from database import Base
 
 
 class ExamCatalog(Base):
-    __tablename__ = "labcore_exam_catalog"
+    __tablename__ = "exam_catalog"
+    __table_args__ = {"schema": "labcore"}
 
     id = Column(String(36), primary_key=True)
     exam_code = Column(String(20), nullable=False, unique=True)
