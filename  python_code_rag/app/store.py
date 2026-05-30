@@ -72,3 +72,10 @@ def insert_chunks(conn, collection: str, chunks: list, vectors: list[list[float]
             ])
         cur.executemany(sql, params)
     conn.commit()
+
+
+def list_collections(conn) -> list[str]:
+    cur = conn.cursor()
+    cur.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'RAG_%'")
+    rows = cur.fetchall()
+    return [row[0][4:] for row in rows]
