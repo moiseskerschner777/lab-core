@@ -35,28 +35,16 @@ python_code_rag/
 ## Docker Compose Architecture
 
 ```
-python_code_rag/docker-compose.yml
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│  ┌─────────────────┐     ┌──────────────────────┐  │
-│  │   app           │     │   ollama             │  │
-│  │   :8001 (host)  │────▶│   :11434 (internal)  │  │
-│  │   FastAPI       │     │   GPU: RTX 5080       │  │
-│  └────────┬────────┘     └──────────────────────┘  │
-│           │                                         │
-│  networks: [python_code_rag_default,                │
-│             lab-core_default]                       │
-└───────────┼─────────────────────────────────────────┘
-            │  lab-core_default (external)
-            ▼
-┌─────────────────────────────────────────────────────┐
-│  root docker-compose.yml                            │
-│  ┌──────────────────────┐                           │
-│  │   iris               │                           │
-│  │   :1972 (internal)   │                           │
-│  │   :52773 (internal)  │                           │
-│  └──────────────────────┘                           │
-└─────────────────────────────────────────────────────┘
+Host machine
+├── ollama (native, nohup, 0.0.0.0:11434, GPU RTX 5080)
+│
+├── docker-compose (root / lab-core)
+│   └── iris  (:1972, :52773)  →  lab-core_default network
+│
+└── python_code_rag/docker-compose.yml
+    └── app (:8001)
+        ├── → host.docker.internal:11434  (Ollama, via extra_hosts)
+        └── → iris:1972                  (IRIS, via lab-core_default)
 
 External MCP / Cursor → http://localhost:8001
 ```
@@ -65,31 +53,20 @@ External MCP / Cursor → http://localhost:8001
 
 ```yaml
 services:
-  ollama:
-    image: ollama/ollama:latest
-    volumes:
-      - ollama_data:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-
   app:
     build: .
     ports:
       - "8001:8001"
-    depends_on:
-      - ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       IRIS_HOST: iris
       IRIS_PORT: 1972
       IRIS_NAMESPACE: USER
       IRIS_USERNAME: _SYSTEM
       IRIS_PASSWORD: SYS
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: http://host.docker.internal:11434
+      EMBED_PROVIDER: ollama
       EMBED_MODEL: snowflake-arctic-embed2
       EMBED_DIM: 1024
       EMBED_PARALLELISM: 16
@@ -105,9 +82,6 @@ services:
 networks:
   lab-core_default:
     external: true
-
-volumes:
-  ollama_data:
 ```
 
 ### `Dockerfile`
@@ -383,7 +357,7 @@ EMBED_DIM         = int(os.getenv("EMBED_DIM",     "1024"))
 SEARCH_TOP_K      = int(os.getenv("SEARCH_TOP_K",  "8"))
 
 # ── Ollama ────────────────────────────────────────────────────────────────────
-OLLAMA_URL        = os.getenv("OLLAMA_URL",        "http://ollama:11434")
+OLLAMA_URL        = os.getenv("OLLAMA_URL",        "http://host.docker.internal:11434")
 EMBED_MODEL       = os.getenv("EMBED_MODEL",       "snowflake-arctic-embed2")
 EMBED_BATCH_SIZE  = int(os.getenv("EMBED_BATCH_SIZE",  "100"))
 EMBED_PARALLELISM = int(os.getenv("EMBED_PARALLELISM", "16"))
@@ -407,7 +381,7 @@ OPENAI_EMBED_MODEL = os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small")
 4. **`VECTOR_COSINE` over `VECTOR_DOT_PRODUCT`**: cosine implicitly normalizes vectors — correct for text embeddings where magnitude is irrelevant. No need to pre-normalize before insert.
 5. **HNSW index on every collection**: created immediately after `CREATE TABLE`. Activates automatically on `TOP + ORDER BY DESC + VECTOR_COSINE` queries. Without it, every search does a full table scan — unusable on large codebases.
 6. **Provider strategy pattern in `embedder.py`**: `EMBED_PROVIDER=ollama|openai` dispatches to the right implementation. The rest of the codebase calls only `embed()` — zero changes needed to swap providers. OpenAI is a placeholder today; filling it in later requires touching only `embedder.py` and `config.py`.
-7. **Ollama local with GPU (default)**: embeddings stay local, fast, no API cost.
+7. **Ollama native on host (not containerized)**: runs with `nohup ollama serve`, bind `0.0.0.0:11434`. The `app` container reaches it via `host.docker.internal:11434` using `extra_hosts: host-gateway`. No Ollama container — nothing to pull or manage in compose.
 8. **External network `lab-core_default`**: app reaches IRIS by its service name `iris` without touching the root compose.
 9. **Port 8001**: avoids conflict with `labcore` on 8000.
 10. **No chat endpoint**: retrieval only — the MCP handles LLM interaction.
