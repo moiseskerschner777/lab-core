@@ -10,7 +10,7 @@ EMBED_PROVIDER    = os.getenv("EMBED_PROVIDER",    "ollama")
 EMBED_DIM         = int(os.getenv("EMBED_DIM",     "1024"))
 SEARCH_TOP_K      = int(os.getenv("SEARCH_TOP_K",  "8"))
 
-OLLAMA_URL        = os.getenv("OLLAMA_URL",        "http://ollama:11434")
+OLLAMA_URL        = os.getenv("OLLAMA_URL",        "http://host.docker.internal:11434")
 EMBED_MODEL       = os.getenv("EMBED_MODEL",       "snowflake-arctic-embed2")
 EMBED_BATCH_SIZE  = int(os.getenv("EMBED_BATCH_SIZE",  "100"))
 EMBED_PARALLELISM = int(os.getenv("EMBED_PARALLELISM", "16"))
