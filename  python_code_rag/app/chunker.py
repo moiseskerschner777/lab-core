@@ -1,5 +1,17 @@
 import hashlib
 from dataclasses import dataclass
+from pathlib import Path
+
+import tree_sitter_python as tspython
+from tree_sitter import Language, Parser, Tree
+
+PY_LANGUAGE = Language(tspython.language())
+
+
+def parse_file(path: Path) -> Tree:
+    parser = Parser(PY_LANGUAGE)
+    source = path.read_bytes()
+    return parser.parse(source)
 
 @dataclass
 class Chunk:
