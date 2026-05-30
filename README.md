@@ -1,12 +1,14 @@
 # LabCore API
 
 Base URL: `http://localhost:8000`
+Porta: http://localhost:52773/csp/sys/UtilHome.csp
 
 ## Running locally
 
 ```bash
 docker compose up --build
 ```
+
 
 ## Database connection (DBeaver)
 

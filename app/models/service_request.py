@@ -12,8 +12,8 @@ class ServiceRequest(Base):
 
     id = Column(String(36), primary_key=True)
     code = Column(String(20), unique=True, nullable=False)
-    status = Column(String(20), default="active", nullable=False)
-    priority = Column(String(20), default="routine", nullable=False)
+    status = Column(String(20), default="ACTIVE", nullable=False)
+    priority = Column(String(20), default="ROUTINE", nullable=False)
     patient_id = Column(String(36), ForeignKey("labcore.patient.id"), nullable=False)
     practitioner_id = Column(
         String(36), ForeignKey("labcore.practitioner.id"), nullable=False
@@ -24,3 +24,4 @@ class ServiceRequest(Base):
 
     patient = relationship("Patient")
     practitioner = relationship("Practitioner")
+    items = relationship("ServiceRequestItem")

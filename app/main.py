@@ -8,6 +8,8 @@ from models import exam_catalog, patient, practitioner, service_request, service
 from routes.health import router as health_router
 from routes.patients import router as patients_router
 from routes.practitioners import router as practitioners_router
+from routes.exam_catalog import router as exam_catalog_router
+from routes.service_requests import router as service_requests_router
 from seed.seed_data import seed_database_if_empty
 
 
@@ -27,6 +29,8 @@ app = FastAPI(title="LabCore API", version="0.1.0", lifespan=lifespan)
 app.include_router(health_router)
 app.include_router(patients_router, prefix="/patients")
 app.include_router(practitioners_router, prefix="/practitioners")
+app.include_router(exam_catalog_router, prefix="/exam-catalog")
+app.include_router(service_requests_router, prefix="/service-requests")
 
 
 if __name__ == "__main__":
