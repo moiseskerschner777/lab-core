@@ -33,6 +33,6 @@ class ServiceRequestResponse(BaseModel):
 class ServiceRequestCreate(BaseModel):
     patient_id: str
     practitioner_id: str
-    priority: str = "routine"
+    priority: str = "ROUTINE"
     notes: Optional[str] = None
     items: list[dict]

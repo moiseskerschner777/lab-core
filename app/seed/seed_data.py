@@ -21,7 +21,7 @@ PATIENTS = [
         "name_family": "Silva",
         "name_given": "Ana Paula",
         "birth_date": date(1988, 4, 12),
-        "gender": "female",
+        "gender": "FEMALE",
         "active": True,
     },
     {
@@ -29,7 +29,7 @@ PATIENTS = [
         "name_family": "Oliveira",
         "name_given": "Carlos Eduardo",
         "birth_date": date(1979, 9, 3),
-        "gender": "male",
+        "gender": "MALE",
         "active": True,
     },
     {
@@ -37,7 +37,7 @@ PATIENTS = [
         "name_family": "Souza",
         "name_given": "Mariana",
         "birth_date": date(1995, 1, 27),
-        "gender": "female",
+        "gender": "FEMALE",
         "active": True,
     },
     {
@@ -45,7 +45,7 @@ PATIENTS = [
         "name_family": "Pereira",
         "name_given": "Joao Pedro",
         "birth_date": date(2001, 7, 18),
-        "gender": "male",
+        "gender": "MALE",
         "active": True,
     },
     {
@@ -53,7 +53,7 @@ PATIENTS = [
         "name_family": "Costa",
         "name_given": "Fernanda",
         "birth_date": date(1983, 11, 22),
-        "gender": "female",
+        "gender": "FEMALE",
         "active": True,
     },
     {
@@ -61,7 +61,7 @@ PATIENTS = [
         "name_family": "Rodrigues",
         "name_given": "Lucas",
         "birth_date": date(1992, 5, 8),
-        "gender": "male",
+        "gender": "MALE",
         "active": True,
     },
     {
@@ -69,7 +69,7 @@ PATIENTS = [
         "name_family": "Almeida",
         "name_given": "Beatriz",
         "birth_date": date(1974, 2, 14),
-        "gender": "female",
+        "gender": "FEMALE",
         "active": True,
     },
     {
@@ -77,7 +77,7 @@ PATIENTS = [
         "name_family": "Lima",
         "name_given": "Rafael",
         "birth_date": date(1986, 12, 30),
-        "gender": "male",
+        "gender": "MALE",
         "active": True,
     },
     {
@@ -85,7 +85,7 @@ PATIENTS = [
         "name_family": "Gomes",
         "name_given": "Patricia",
         "birth_date": date(1998, 6, 5),
-        "gender": "female",
+        "gender": "FEMALE",
         "active": True,
     },
     {
@@ -93,7 +93,7 @@ PATIENTS = [
         "name_family": "Martins",
         "name_given": "Thiago",
         "birth_date": date(1969, 10, 9),
-        "gender": "male",
+        "gender": "MALE",
         "active": True,
     },
 ]
@@ -186,7 +186,7 @@ EXAMS = [
         "category": "oncology",
         "can_perform": False,
         "requires_support_lab": True,
-        "support_lab": "reflab",
+        "support_lab": "REFLAB",
         "turnaround_hours": 72,
     },
     {
@@ -196,7 +196,7 @@ EXAMS = [
         "category": "genetics",
         "can_perform": False,
         "requires_support_lab": True,
-        "support_lab": "reflab",
+        "support_lab": "REFLAB",
         "turnaround_hours": 120,
     },
     {
@@ -206,7 +206,7 @@ EXAMS = [
         "category": "microbiology",
         "can_perform": False,
         "requires_support_lab": True,
-        "support_lab": "reflab",
+        "support_lab": "REFLAB",
         "turnaround_hours": 96,
     },
 ]
@@ -215,8 +215,8 @@ SERVICE_REQUESTS = [
     {
         "id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
         "code": "OS-00001",
-        "status": "active",
-        "priority": "routine",
+        "status": "ACTIVE",
+        "priority": "ROUTINE",
         "patient_id": "11c5be47-3215-4890-a79f-9c2b2293a85e",
         "practitioner_id": "0f7f838f-5bbd-43b7-951c-02582e4272a3",
         "created_at": datetime(2026, 5, 20, 8, 0, 0),
@@ -226,8 +226,8 @@ SERVICE_REQUESTS = [
     {
         "id": "cd974d08-25b3-4dad-b7d6-9b5fd0d1c775",
         "code": "OS-00002",
-        "status": "active",
-        "priority": "urgent",
+        "status": "ACTIVE",
+        "priority": "URGENT",
         "patient_id": "e36e8749-a762-45ea-bd6b-63a5745d6e07",
         "practitioner_id": "8853e3c3-d0f9-469f-ae48-7813dc83b8ec",
         "created_at": datetime(2026, 5, 20, 9, 15, 0),
@@ -237,8 +237,8 @@ SERVICE_REQUESTS = [
     {
         "id": "8be80631-8b87-4b62-a852-72d5926b021e",
         "code": "OS-00003",
-        "status": "active",
-        "priority": "routine",
+        "status": "ACTIVE",
+        "priority": "ROUTINE",
         "patient_id": "664d2678-29ce-450e-ab50-bd463364ded6",
         "practitioner_id": "35ca797f-5099-479d-91d5-fbe12a125b90",
         "created_at": datetime(2026, 5, 21, 10, 30, 0),
@@ -248,8 +248,8 @@ SERVICE_REQUESTS = [
     {
         "id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
         "code": "OS-00004",
-        "status": "completed",
-        "priority": "routine",
+        "status": "COMPLETED",
+        "priority": "ROUTINE",
         "patient_id": "57b22f32-fb64-4328-8aea-331c799e8c5b",
         "practitioner_id": "8853e3c3-d0f9-469f-ae48-7813dc83b8ec",
         "created_at": datetime(2026, 5, 18, 7, 45, 0),
@@ -259,8 +259,8 @@ SERVICE_REQUESTS = [
     {
         "id": "6f9036b2-7130-47a5-9574-2bf5ce213fc7",
         "code": "OS-00005",
-        "status": "cancelled",
-        "priority": "stat",
+        "status": "CANCELLED",
+        "priority": "STAT",
         "patient_id": "cbf0c4f8-6414-4e62-a9d6-8f5fae25e87f",
         "practitioner_id": "0f7f838f-5bbd-43b7-951c-02582e4272a3",
         "created_at": datetime(2026, 5, 19, 6, 20, 0),
@@ -275,7 +275,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
         "exam_code": "HEM001",
         "exam_name": "Hemograma",
-        "status": "pending",
+        "status": "PENDING",
         "notes": None,
     },
     {
@@ -283,7 +283,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "51f63f5b-3db9-40c9-9344-b86cb7dc30fd",
         "exam_code": "GLI001",
         "exam_name": "Glicemia",
-        "status": "pending",
+        "status": "PENDING",
         "notes": None,
     },
     {
@@ -291,7 +291,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "cd974d08-25b3-4dad-b7d6-9b5fd0d1c775",
         "exam_code": "ONC001",
         "exam_name": "Marcadores Tumorais",
-        "status": "pending",
+        "status": "PENDING",
         "notes": "Aguardando roteamento",
     },
     {
@@ -299,7 +299,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "8be80631-8b87-4b62-a852-72d5926b021e",
         "exam_code": "TSH001",
         "exam_name": "TSH",
-        "status": "pending",
+        "status": "PENDING",
         "notes": None,
     },
     {
@@ -307,7 +307,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "8be80631-8b87-4b62-a852-72d5926b021e",
         "exam_code": "GEN001",
         "exam_name": "Teste Genético",
-        "status": "pending",
+        "status": "PENDING",
         "notes": "Enviar ao laboratório de apoio",
     },
     {
@@ -315,7 +315,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
         "exam_code": "COL001",
         "exam_name": "Colesterol Total",
-        "status": "completed",
+        "status": "COMPLETED",
         "notes": None,
     },
     {
@@ -323,7 +323,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "8b0282bf-12c0-4a91-ad86-966dfe59d660",
         "exam_code": "URI001",
         "exam_name": "Urina Tipo I",
-        "status": "completed",
+        "status": "COMPLETED",
         "notes": None,
     },
     {
@@ -331,7 +331,7 @@ SERVICE_REQUEST_ITEMS = [
         "service_request_id": "6f9036b2-7130-47a5-9574-2bf5ce213fc7",
         "exam_code": "CUL001",
         "exam_name": "Cultura e Antibiograma",
-        "status": "cancelled",
+        "status": "CANCELLED",
         "notes": "Cancelado com a OS",
     },
 ]

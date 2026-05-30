@@ -13,5 +13,5 @@ class ServiceRequestItem(Base):
     )
     exam_code = Column(String(20), nullable=False)
     exam_name = Column(String(120), nullable=False)
-    status = Column(String(20), default="pending", nullable=False)
+    status = Column(String(20), default="PENDING", nullable=False)
     notes = Column(String(255), nullable=True)

@@ -34,7 +34,7 @@ def create_service_request(body: ServiceRequestCreate, db: Session = Depends(get
     sr = ServiceRequest(
         id=str(uuid4()),
         code=code,
-        status="active",
+        status="ACTIVE",
         priority=body.priority,
         patient_id=body.patient_id,
         practitioner_id=body.practitioner_id,
@@ -49,7 +49,7 @@ def create_service_request(body: ServiceRequestCreate, db: Session = Depends(get
             service_request_id=sr.id,
             exam_code=item_data["exam_code"],
             exam_name=item_data["exam_name"],
-            status="pending",
+            status="PENDING",
         )
         db.add(item)
 
@@ -65,14 +65,14 @@ def cancel_service_request(id: str, db: Session = Depends(get_db)):
     if service_request is None:
         raise HTTPException(status_code=404, detail="ServiceRequest not found")
 
-    if service_request.status == "cancelled":
+    if service_request.status == "CANCELLED":
         raise HTTPException(status_code=422, detail="ServiceRequest is already cancelled")
 
-    service_request.status = "cancelled"
+    service_request.status = "CANCELLED"
     service_request.cancelled_at = datetime.utcnow()
 
     for item in service_request.items:
-        item.status = "cancelled"
+        item.status = "CANCELLED"
 
     db.commit()
     db.refresh(service_request)
