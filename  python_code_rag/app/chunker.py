@@ -122,3 +122,14 @@ def chunk_file(path: Path, root: Path) -> list:
     ))
 
     return chunks
+
+
+def chunk_codebase(root: Path) -> list:
+    skip_dirs = {"__pycache__", ".venv", ".git", "node_modules"}
+    all_chunks: list = []
+    for py_file in sorted(root.rglob("*.py")):
+        rel = py_file.relative_to(root)
+        if any(p in skip_dirs for p in rel.parts[:-1]):
+            continue
+        all_chunks.extend(chunk_file(py_file, root))
+    return all_chunks
