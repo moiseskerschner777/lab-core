@@ -64,4 +64,25 @@ def chunk_file(path: Path, root: Path) -> list:
             module=module_name,
         ))
 
+    for node in _walk_collect(tree.root_node, "class_definition"):
+        name_node = node.child_by_field_name("name")
+        name = name_node.text.decode() if name_node else "<unknown>"
+        body = node.child_by_field_name("body")
+        end_node = node
+        if body and body.named_child_count > 0:
+            first = body.named_children[0]
+            if first.type == "expression_statement":
+                end_node = first
+        text = source_bytes[node.start_byte : end_node.end_byte].decode()
+        chunks.append(Chunk(
+            id=chunk_id(rel_path, "class", name),
+            file=rel_path,
+            type="class",
+            name=name,
+            start_line=node.start_point[0] + 1,
+            end_line=end_node.end_point[0] + 1,
+            text=text,
+            module=module_name,
+        ))
+
     return chunks
