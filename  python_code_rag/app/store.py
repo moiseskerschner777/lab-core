@@ -48,18 +48,18 @@ def collection_exists(conn, collection: str) -> bool:
 
 def insert_chunks(conn, collection: str, chunks: list, vectors: list[list[float]]):
     cur = conn.cursor()
-    sql = f"""
-        INSERT INTO RAG_{collection}
-        (chunk_id, file, type, name, start_line, end_line, "module", text, embedding)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, TO_VECTOR(?))
-    """
     batch_size = 100
     for i in range(0, len(chunks), batch_size):
         batch_chunks = chunks[i:i+batch_size]
         batch_vectors = vectors[i:i+batch_size]
-        params = []
         for chunk, vec in zip(batch_chunks, batch_vectors):
-            params.append([
+            vec_str = ",".join(str(v) for v in vec)
+            sql = f"""
+                INSERT INTO RAG_{collection}
+                (chunk_id, file, type, name, start_line, end_line, "module", text, embedding)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, TO_VECTOR('{vec_str}'))
+            """
+            cur.execute(sql, [
                 chunk.id,
                 chunk.file,
                 chunk.type,
@@ -68,9 +68,7 @@ def insert_chunks(conn, collection: str, chunks: list, vectors: list[list[float]
                 chunk.end_line,
                 chunk.module,
                 chunk.text,
-                str(vec),
             ])
-        cur.executemany(sql, params)
     conn.commit()
 
 
@@ -79,3 +77,30 @@ def list_collections(conn) -> list[str]:
     cur.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'RAG_%'")
     rows = cur.fetchall()
     return [row[0][4:] for row in rows]
+
+
+def search(conn, collection: str, query_vec: list[float], top_k: int) -> list[dict]:
+    cur = conn.cursor()
+    vec_str = ",".join(str(v) for v in query_vec)
+    sql = f"""
+        SELECT TOP ? chunk_id, file, type, name, start_line, end_line, "module", text,
+               VECTOR_COSINE(TO_VECTOR(embedding), TO_VECTOR('{vec_str}')) AS score
+        FROM RAG_{collection}
+        ORDER BY score DESC
+    """
+    cur.execute(sql, [top_k])
+    rows = cur.fetchall()
+    return [
+        {
+            "chunk_id": row[0],
+            "file": row[1],
+            "type": row[2],
+            "name": row[3],
+            "start_line": row[4],
+            "end_line": row[5],
+            "module": row[6],
+            "text": row[7],
+            "score": row[8],
+        }
+        for row in rows
+    ]
