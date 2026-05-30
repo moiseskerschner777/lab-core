@@ -24,3 +24,4 @@ class ServiceRequest(Base):
 
     patient = relationship("Patient")
     practitioner = relationship("Practitioner")
+    items = relationship("ServiceRequestItem")
