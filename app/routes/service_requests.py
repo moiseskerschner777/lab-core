@@ -57,3 +57,24 @@ def create_service_request(body: ServiceRequestCreate, db: Session = Depends(get
     db.refresh(sr)
 
     return sr
+
+
+@router.put("/{id}/cancel", response_model=ServiceRequestResponse)
+def cancel_service_request(id: str, db: Session = Depends(get_db)):
+    service_request = db.get(ServiceRequest, id)
+    if service_request is None:
+        raise HTTPException(status_code=404, detail="ServiceRequest not found")
+
+    if service_request.status == "cancelled":
+        raise HTTPException(status_code=422, detail="ServiceRequest is already cancelled")
+
+    service_request.status = "cancelled"
+    service_request.cancelled_at = datetime.utcnow()
+
+    for item in service_request.items:
+        item.status = "cancelled"
+
+    db.commit()
+    db.refresh(service_request)
+
+    return service_request
