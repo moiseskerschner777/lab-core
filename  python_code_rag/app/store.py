@@ -44,3 +44,31 @@ def collection_exists(conn, collection: str) -> bool:
     cur = conn.cursor()
     cur.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'RAG_{collection}'")
     return cur.fetchone() is not None
+
+
+def insert_chunks(conn, collection: str, chunks: list, vectors: list[list[float]]):
+    cur = conn.cursor()
+    sql = f"""
+        INSERT INTO RAG_{collection}
+        (chunk_id, file, type, name, start_line, end_line, "module", text, embedding)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, TO_VECTOR(?))
+    """
+    batch_size = 100
+    for i in range(0, len(chunks), batch_size):
+        batch_chunks = chunks[i:i+batch_size]
+        batch_vectors = vectors[i:i+batch_size]
+        params = []
+        for chunk, vec in zip(batch_chunks, batch_vectors):
+            params.append([
+                chunk.id,
+                chunk.file,
+                chunk.type,
+                chunk.name,
+                chunk.start_line,
+                chunk.end_line,
+                chunk.module,
+                chunk.text,
+                str(vec),
+            ])
+        cur.executemany(sql, params)
+    conn.commit()
