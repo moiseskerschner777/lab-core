@@ -12,7 +12,7 @@ async def health():
     ollama_status = "ok"
 
     try:
-        import intersystems_irispython.intersystems.iris as iris
+        import iris
         conn = iris.connect(config.IRIS_HOST, config.IRIS_PORT, config.IRIS_NAMESPACE,
                             config.IRIS_USERNAME, config.IRIS_PASSWORD)
         cur = conn.cursor()
