@@ -85,4 +85,24 @@ def chunk_file(path: Path, root: Path) -> list:
             module=module_name,
         ))
 
+    import_texts = []
+    import_end = 0
+    for child in tree.root_node.named_children:
+        if child.type in ("import_statement", "import_from_statement"):
+            import_texts.append(source_bytes[child.start_byte : child.end_byte].decode())
+            import_end = child.end_point[0] + 1
+    if import_texts:
+        stem = path.stem
+        first_import = next(c for c in tree.root_node.named_children if c.type in ("import_statement", "import_from_statement"))
+        chunks.append(Chunk(
+            id=chunk_id(rel_path, "imports", stem),
+            file=rel_path,
+            type="imports",
+            name=stem,
+            start_line=first_import.start_point[0] + 1,
+            end_line=import_end,
+            text="\n".join(import_texts),
+            module=module_name,
+        ))
+
     return chunks
