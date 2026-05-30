@@ -46,6 +46,7 @@ def chunk_file(path: Path, root: Path) -> list:
     tree = parse_file(path)
     rel_path = str(path.relative_to(root))
     module_name = rel_path.replace("/", ".").replace("\\", ".").removesuffix(".py")
+    stem = path.stem
 
     chunks: list = []
 
@@ -92,7 +93,6 @@ def chunk_file(path: Path, root: Path) -> list:
             import_texts.append(source_bytes[child.start_byte : child.end_byte].decode())
             import_end = child.end_point[0] + 1
     if import_texts:
-        stem = path.stem
         first_import = next(c for c in tree.root_node.named_children if c.type in ("import_statement", "import_from_statement"))
         chunks.append(Chunk(
             id=chunk_id(rel_path, "imports", stem),
@@ -104,5 +104,21 @@ def chunk_file(path: Path, root: Path) -> list:
             text="\n".join(import_texts),
             module=module_name,
         ))
+
+    source_str = source_bytes.decode()
+    lines = source_str.splitlines()
+    module_text = "\n".join(lines[:120])
+    if len(lines) > 120:
+        module_text += "\n# ... truncated"
+    chunks.append(Chunk(
+        id=chunk_id(rel_path, "module", stem),
+        file=rel_path,
+        type="module",
+        name=stem,
+        start_line=1,
+        end_line=min(len(lines), 120),
+        text=module_text,
+        module=module_name,
+    ))
 
     return chunks
